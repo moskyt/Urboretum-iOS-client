@@ -146,7 +146,7 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
         if (![[UIApplication sharedApplication] openURL:url]) {
             NSString* msg = [@"Nepodařilo se otevřít stránku " stringByAppendingString:town.href];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Link" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            //        [alert show], [alert release];
+            [alert show], [alert release];
         }
     }
 }
