@@ -7,17 +7,63 @@
 //
 
 #import "urboretumAppDelegate.h"
+#import "Town.h"
 
 @implementation urboretumAppDelegate
 
 @synthesize window = _window;
-@synthesize navigationController = _navigationController;
+@synthesize tabBarController = _tabBarController;
+@synthesize towns;
+@synthesize townMap;
+@synthesize depts;
+
+-(User*) currentUser
+{
+    return nil;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    // load the town data
+    NSBundle* bundle = [NSBundle mainBundle];
+	NSString* plistPath = [bundle pathForResource:@"towns" ofType:@"plist"];
+    
+    // list of all towns as the individual records
+	NSArray* townList = [[NSArray alloc] initWithContentsOfFile:plistPath];    
+    // all towns as name->record dictionary
+    NSMutableDictionary* townDict = [[NSMutableDictionary alloc] init];
+    // town mapping as department->[towns]
+    NSMutableDictionary* townMapp = [[NSMutableDictionary alloc] init];
+    // list of departments
+    NSMutableArray* deptList = [[NSMutableArray alloc] init];
+    
+    for (id object in townList) {
+        // get next town
+        Town* town = [[Town alloc] initWithDictionary:(NSDictionary*) object];
+        [town retain];
+        // look if the department is already on the list
+        if (!([deptList containsObject:town.department])) {
+            // otherwise, add it to the list
+            [deptList addObject:town.department]; 
+            // and stack up a new array into the map
+            NSMutableArray* new_list = [[NSMutableArray alloc] init];
+            [townMapp setObject:new_list forKey:town.department];
+        }
+        [[townMapp objectForKey:town.department] addObject:town.name];
+        [townDict setObject:town forKey:town.name];
+    }
+    
+    self.depts = [[NSArray alloc] initWithArray:[deptList sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]];
+    self.towns = [[NSDictionary alloc] initWithDictionary:townDict copyItems:NO];
+    self.townMap = [[NSDictionary alloc] initWithDictionary:townMapp copyItems:YES];
+    
+    [deptList release];
+    [townList release];
+    [townMap release];
+    [townDict release];
+
     // Add the navigation controller's view to the window and display.
-    self.window.rootViewController = self.navigationController;
+    self.window.rootViewController = self.tabBarController;
     [self.window makeKeyAndVisible];
     return YES;
 }
@@ -64,7 +110,7 @@
 - (void)dealloc
 {
     [_window release];
-    [_navigationController release];
+    [_tabBarController release];
     [super dealloc];
 }
 

@@ -7,11 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "User.h"
 
-@interface urboretumAppDelegate : NSObject <UIApplicationDelegate>
+@interface urboretumAppDelegate : NSObject <UIApplicationDelegate, UITabBarControllerDelegate>
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 
-@property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
+@property (nonatomic, retain) IBOutlet UITabBarController *tabBarController;
+
+@property (retain) NSDictionary* towns;
+@property (retain) NSDictionary* townMap;
+@property (retain) NSArray* depts;
+
+-(User*) currentUser;
 
 @end
